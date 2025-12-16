@@ -14,3 +14,5 @@ class LessonListCreate(generics.ListCreateAPIView):
 class LessonRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+
+
