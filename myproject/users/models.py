@@ -50,5 +50,6 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=10, choices=PAYMENT_CHOICES)
 
+
     def __str__(self):
         return f'{self.user} - {self.amount} ({self.payment_method})'
