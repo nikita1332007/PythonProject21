@@ -2,25 +2,12 @@ from django.contrib.auth.models import User
 from django.contrib.postgres import serializers
 
 from .models import Course, Lesson
+from .validators import validate_youtube_link
 from ..users.models import Payment
 
 
-class CourseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Course
-        fields = '__all__'
-
-
-    class Meta:
-        model = Course
-        fields = ('id', 'name', 'description', 'lessons_count')
-
-
-    def get_lessons_count(self, obj):
-        return obj.lessons.count()
-
-
 class LessonSerializer(serializers.ModelSerializer):
+    material_link = serializers.URLField(validators=[validate_youtube_link])
     class Meta:
         model = Lesson
         fields = ('id', 'title', 'content', 'duration')
@@ -34,6 +21,12 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ('id', 'name', 'description', 'lessons_count', 'lessons')
+
+        def get_is_subscribed(self, obj):
+            user = self.context.get('request').user
+            if user.is_anonymous:
+                return False
+            return obj.subscriptions.filter(user=user).exists()
 
 
     def get_lessons_count(self, obj):
