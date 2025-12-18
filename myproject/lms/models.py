@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -5,7 +6,7 @@ class Course(models.Model):
     title = models.CharField(max_length=255)
     preview = models.ImageField(upload_to='course_previews/')
     description = models.TextField()
-
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='courses')
 
     def __str__(self):
         return self.title
@@ -17,7 +18,7 @@ class Lesson(models.Model):
     description = models.TextField()
     preview = models.ImageField(upload_to='lesson_previews/')
     video_url = models.URLField()
-
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lessons')
 
     def __str__(self):
         return self.title
