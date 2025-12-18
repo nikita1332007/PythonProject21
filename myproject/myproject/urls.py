@@ -17,12 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.db import router
 from django.urls import path, include
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from myproject.lms.views import LessonListCreate, LessonRetrieveUpdateDestroy
+from myproject.lms.views import LessonListCreate, LessonRetrieveUpdateDestroy, RegisterAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('lessons/', LessonListCreate.as_view(), name='lesson-list-create'),
     path('lessons/<int:pk>/', LessonRetrieveUpdateDestroy.as_view(), name='lesson-detail'),
+    path('register/', RegisterAPIView.as_view(), name='register'),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/users/', include('users.urls')),
+    path('api/lms/', include('lms.urls')),
 ]
