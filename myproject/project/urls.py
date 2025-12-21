@@ -1,5 +1,5 @@
 """
-URL configuration for project project.
+URL configuration for project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/6.0/topics/http/urls/
@@ -16,10 +16,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.db import router
-from django.urls import path, include
+from django.urls import path, include, re_path
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from myproject.lms.views import LessonListCreate, LessonRetrieveUpdateDestroy
+from myproject.users.views import RegisterAPIView
 
-from myproject.lms.views import LessonListCreate, LessonRetrieveUpdateDestroy, RegisterAPIView
+schema_view = get_schema_view(
+   openapi.Info(
+      title="LMS API",
+      default_version='v1',
+      description="Документация API для проекта LMS",
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,4 +45,9 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/users/', include('users.urls')),
     path('api/lms/', include('lms.urls')),
+    path('api/', include('lms.urls')),
+
+    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
