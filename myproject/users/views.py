@@ -1,7 +1,23 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
+from rest_framework.permissions import IsAuthenticated
+
 from .models import User
 from .serializers import UserProfileSerializer, UserDetailSerializer
+from ..lms.serializers import UserCreateSerializer, UserSerializer
 
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return UserCreateSerializer
+        return UserSerializer
+
+class RegisterAPIView(generics.CreateAPIView):
+    serializer_class = UserCreateSerializer
+    permission_classes = []
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
