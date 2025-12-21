@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 
 from myproject.lms.models import Course, Lesson
-from myproject.myproject import settings
+from myproject.project import settings
 
 
 class UserManager(BaseUserManager):

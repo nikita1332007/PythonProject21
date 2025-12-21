@@ -9,6 +9,7 @@ class Course(models.Model):
     description = models.TextField()
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='courses')
 
+
     def __str__(self):
         return self.title
 

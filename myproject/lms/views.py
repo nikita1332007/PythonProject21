@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAuthenticated
@@ -7,7 +6,7 @@ from rest_framework.views import APIView
 from .models import Course, Lesson, CourseSubscription
 from .paginators import StandardResultsSetPagination
 from .permissions import IsModeratorOrReadOnly, IsOwnerOrModerator
-from .serializers import CourseSerializer, LessonSerializer, UserCreateSerializer, UserSerializer
+from .serializers import CourseSerializer, LessonSerializer
 from ..users.models import Payment
 from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import PaymentSerializer
@@ -27,16 +26,18 @@ class CourseViewSet(viewsets.ModelViewSet):
             permission_classes = [IsAuthenticated, IsOwnerOrModerator]
         return [permission() for permission in permission_classes]
 
-
 class LessonListCreate(generics.ListCreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-
 
 class LessonRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
+class LessonViewSet(viewsets.ModelViewSet):
+    queryset = Lesson.objects.all()
+    serializer_class = LessonSerializer
+    pagination_class = StandardResultsSetPagination
 
 class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
@@ -44,22 +45,6 @@ class PaymentViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['status', 'amount', 'date']
     ordering_fields = ['date', 'amount']
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
-
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return UserCreateSerializer
-        return UserSerializer
-
-
-class RegisterAPIView(generics.CreateAPIView):
-    serializer_class = UserCreateSerializer
-    permission_classes = []
-
 
 class CourseSubscriptionAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -72,7 +57,6 @@ class CourseSubscriptionAPIView(APIView):
             return Response({'error': 'Поле course_id обязательно'}, status=400)
 
         course = get_object_or_404(Course, id=course_id)
-
         subscription = CourseSubscription.objects.filter(user=user, course=course)
 
         if subscription.exists():
@@ -83,7 +67,3 @@ class CourseSubscriptionAPIView(APIView):
             message = 'Подписка добавлена'
 
         return Response({'message': message})
-
-
-class LessonViewSet(...):
-    pagination_class = StandardResultsSetPagination
