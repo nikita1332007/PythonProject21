@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'users',
     'django_filters',
     'lms',
+    'drf_yasg',
 ]
 
 
